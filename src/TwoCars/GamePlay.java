@@ -1,10 +1,14 @@
 package TwoCars;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.io.IOException;
 
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
@@ -19,11 +23,14 @@ public class GamePlay extends JPanel implements Runnable, KeyListener, Constants
 	
 	private static Score score;
 	
-	// car + background
-	private Image imgBg, imgScore ,imgCar1, imgCar2;
+	private String strHighScore;
 	
-	// item
-	private Image imgItem1, imgItem2, imgItem3, imgItem4;
+	private boolean isPlay, isReset;
+	
+	private Image imgBg, imgBgShadow, imgScore, imgPlay, imgReset;
+	
+	private SoundGame soundGame;
+	
 	
 	public GamePlay () {
 		initBackground();
@@ -35,84 +42,210 @@ public class GamePlay extends JPanel implements Runnable, KeyListener, Constants
 		setDoubleBuffered(true);
 		setFocusable(true);
 		
-		ImageIcon icBG = new ImageIcon("Background.png");
+		ImageIcon icBG = new ImageIcon("res/Background.png");
 		imgBg = icBG.getImage().getScaledInstance(500, 1000, Image.SCALE_SMOOTH);
 		
-		ImageIcon icCar1 = new ImageIcon("CarRed.png");
-		imgCar1 = icCar1.getImage().getScaledInstance(80, 80, Image.SCALE_SMOOTH);
-		
-		ImageIcon icCar2 = new ImageIcon("CarGreen.png");
-		imgCar2 = icCar2.getImage().getScaledInstance(80, 80, Image.SCALE_SMOOTH);
-		
-		ImageIcon icItem1 = new ImageIcon("Item1.png");
-		imgItem1 = icItem1.getImage().getScaledInstance(60, 60,Image.SCALE_SMOOTH);
-		ImageIcon icItem2 = new ImageIcon("Item2.png");
-		imgItem2 = icItem2.getImage().getScaledInstance(60, 60,Image.SCALE_SMOOTH);
-		ImageIcon icItem3 = new ImageIcon("Item3.png");
-		imgItem3 = icItem3.getImage().getScaledInstance(60, 60,Image.SCALE_SMOOTH);
-		ImageIcon icItem4 = new ImageIcon("Item4.png");
-		imgItem4 = icItem4.getImage().getScaledInstance(60, 60,Image.SCALE_SMOOTH);
-		
-		ImageIcon icScore = new ImageIcon("Score.png");
+		ImageIcon icBGShadow = new ImageIcon("res/Backgroundshadow.png");
+		imgBgShadow = icBGShadow.getImage().getScaledInstance(500, 1000, Image.SCALE_SMOOTH);
+			
+		ImageIcon icScore = new ImageIcon("res/ScoreImage.png");
 		imgScore = icScore.getImage().getScaledInstance(70, 45, Image.SCALE_SMOOTH);
 		
+		ImageIcon icPlay = new ImageIcon("res/play.png");
+		imgPlay = icPlay.getImage().getScaledInstance(100, 50, Image.SCALE_SMOOTH);	
+		
+		ImageIcon icReset = new ImageIcon("res/reset.png");
+		imgReset = icReset.getImage().getScaledInstance(100, 50, Image.SCALE_SMOOTH);
 	}
 	
 	public void Start() {
-		bg1 = new Background(0, 0);
-		bg2 = new Background(0, -1000);
+		addMouseListener(new MouseListener() {
+			
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void mousePressed(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void mouseExited(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				// TODO Auto-generated method stub
+				int x=e.getX();
+			    int y=e.getY();
+			    if ((WINDOW_WIDTH/2 - 50 < x && x < WINDOW_WIDTH/2 + 50) && (WINDOW_HEIGHT/2 - 25 < y && y < WINDOW_HEIGHT/2 + 25) && !isPlay) {
+			    	if (!isPlay && isReset) {
+			    		resetGame();
+			    		isPlay = true;
+			    	} else {
+			    		soundGame = new SoundGame();
+				    	isPlay = true;
+			    	}
+			    	soundGame.PlaySound();
+			    }
+			}
+		});
 		
-		car1 = new Car(25, 750, true, false);
-		car2 = new Car(275, 750, true, false);
+		bg1 = new Background(BG_X, BG_Y);
+		bg2 = new Background(BG_X,BG_HEIGHT);
 		
-		item1 = new Item(35, 90,2);
-		item2 = new Item(160, -60,1);
-		item3 = new Item(280, -90,2);
-		item4 = new Item(400, 30,1);
+		car1 = new Car(CAR_X, CAR_Y, true, false,CAR_RED);
+		car2 = new Car(CAR_X+250, CAR_Y, true, false,CAR_BLUE);
 		
-		score = new Score(215, 30, 0);
+		item1 = new Item(35, 0+ITEM_X,ITEM_BLUE);
+		item2 = new Item(155, -490+ITEM_X,ITEM_BLUE);
+		item3 = new Item(282, -40+ITEM_X,ITEM_RED);
+		item4 = new Item(400, -530+ITEM_X,ITEM_RED);
+		
+		score = new Score(SCORE_X, SCORE_Y, 0);
+		
+		isPlay = false;
+		isReset = false;
+		strHighScore= null;
 		
 		Thread thread = new Thread(this);
 		thread.start();
+	}
+	
+	public void resetGame() {
+		bg1 = new Background(BG_X, BG_Y);
+		bg2 = new Background(BG_X,BG_HEIGHT);
+		
+		car1 = new Car(CAR_X, CAR_Y, true, false,CAR_RED);
+		car2 = new Car(CAR_X+250, CAR_Y, true, false,CAR_BLUE);
+		
+		item1 = new Item(35, 0+ITEM_X,ITEM_BLUE);
+		item2 = new Item(155, -490+ITEM_X,ITEM_BLUE);
+		item3 = new Item(282, -40+ITEM_X,ITEM_RED);
+		item4 = new Item(400, -530+ITEM_X,ITEM_RED);
+		
+		score = new Score(SCORE_X, SCORE_Y, 0);
+		score.setShowScore(false);
+		strHighScore = null;
 	}
 	
 	public void paintComponent(Graphics g) {
 		// TODO Auto-generated method stub
 		super.paintComponent(g);
 		DrawBackground(g);
+		if (!isPlay && !isReset) {
+			DrawButtonPlay(g);
+		}
 		DrawCar(g);
 		//DrawRectangle(g);
 		DrawItem(g);
+		DrawScoreImage(g);
 		DrawScore(g);
+		if (!isPlay && isReset) {
+			DrawBackgroundShadow(g);
+			DrawButtonPlay(g);
+			DrawGameOver(g);
+			DrawLableScore(g);
+			DrawLableHighScore(g);
+		}
 	}
 	
 	public void DrawBackground(Graphics g) {
 		g.drawImage(imgBg, bg1.getBgX(), bg1.getBgY(), this);
-		g.drawImage(imgBg, bg2.getBgX(), bg2.getBgY(), this);
+		g.drawImage(imgBg, bg2.getBgX(), bg2.getBgY(), this);	
+	}
+	
+	public void DrawBackgroundShadow(Graphics g) {
+		g.drawImage(imgBgShadow, 0, 0, this);	
+	}
+	
+	public void DrawButtonPlay(Graphics g) {
+		if (!isPlay && isReset) {
+			g.drawImage(imgReset, WINDOW_WIDTH/2 - 50, WINDOW_HEIGHT/2 - 25, this);
+		} else {
+			g.drawImage(imgPlay, WINDOW_WIDTH/2 - 50, WINDOW_HEIGHT/2 - 25, this);
+		}
+	}
+	
+	public void DrawGameOver(Graphics g) {
+		String s = "GAME OVER";
+		Font font = new Font("Dialog",Font.BOLD, 50);
+		g.setFont(font);
+		g.setColor(Color.WHITE);
+		g.drawString(s, WINDOW_WIDTH/2 - 150, WINDOW_HEIGHT/2 - 230 );
+	}
+	
+	public void DrawLableScore(Graphics g) {
+		int sum = item1.getSum()+item2.getSum()+item3.getSum()+item4.getSum();
+		score.setScore(sum);
+		String s = Integer.toString(sum);
+		s = "SCORE    "+s;
+		Font font = new Font("Dialog",Font.BOLD, 30);
+		g.setFont(font);
+		g.setColor(Color.WHITE);
+		g.drawString(s, WINDOW_WIDTH/2 - 85, WINDOW_HEIGHT/2 - 150 );
+	}
+	
+	public void DrawLableHighScore(Graphics g) {
+		if (strHighScore == null) {
+			int newscore = score.getScore();
+			strHighScore = score.CompareScore(newscore);
+			System.out.println(strHighScore);
+		}
+		String s = "BEST     "+strHighScore;
+		Font font = new Font("Dialog",Font.BOLD, 30);
+		g.setFont(font);
+		g.setColor(Color.WHITE);
+		g.drawString(s, WINDOW_WIDTH/2 - 85, WINDOW_HEIGHT/2 - 100 );
 	}
 	
 	public void DrawCar(Graphics g) {
-		g.drawImage(imgCar1, car1.getCarX(), car1.getCarY(), this);
-		g.drawImage(imgCar2, car2.getCarX(), car2.getCarY(), this);
+		g.drawImage(car1.getImageCar(), car1.getCarX(), car1.getCarY(), this);
+		g.drawImage(car2.getImageCar(), car2.getCarX(), car2.getCarY(), this);
 	}
 	
 	public void DrawItem(Graphics g) {
 		if (item1.isOnScreen()) {
-			g.drawImage(imgItem1, item1.getItemX(), item1.getItemY(), this);
+			g.drawImage(item1.getImageItem(), item1.getItemX(), item1.getItemY(), this);
 		}
 		if (item2.isOnScreen()) {
-			g.drawImage(imgItem2, item2.getItemX(), item2.getItemY(), this);
+			g.drawImage(item2.getImageItem(), item2.getItemX(), item2.getItemY(), this);
 		}
 		if (item3.isOnScreen()) {
-			g.drawImage(imgItem3, item3.getItemX(), item3.getItemY(), this);
+			g.drawImage(item3.getImageItem(), item3.getItemX(), item3.getItemY(), this);
 		}
 		if (item4.isOnScreen()) {
-			g.drawImage(imgItem4, item4.getItemX(), item4.getItemY(), this);
+			g.drawImage(item4.getImageItem(), item4.getItemX(), item4.getItemY(), this);
 		}
 	}
 	
-	public void DrawScore(Graphics g) {
+	public void DrawScoreImage(Graphics g) {
 		g.drawImage(imgScore, score.getScoreX(), score.getScoreY(), this);
+	}
+	
+	public void DrawScore(Graphics g) {
+		int sum = item1.getSum()+item2.getSum()+item3.getSum()+item4.getSum();
+		String s = Integer.toString(sum);
+		if (sum < 10) {
+			s = '0'+s;
+		}
+		Font font = new Font("Dialog",Font.BOLD, 25);
+		g.setFont(font);
+		g.setColor(Color.WHITE);
+		g.drawString(s, SCORE_X+20, SCORE_Y+33 );
+		g.setColor(new Color(192, 226, 255));
 	}
 	
 	public void DrawRectangle(Graphics g) {
@@ -130,21 +263,31 @@ public class GamePlay extends JPanel implements Runnable, KeyListener, Constants
 	@Override
 	public void run() {
 			addKeyListener(this);
-		while (car1.isDestroy() == false && car2.isDestroy() == false) { // car1.isDestroy() == false && car2.isDestroy() == false
-			bg1.update();
-			bg2.update();
-			
-			item1.update();
-			item2.update();
-			item3.update();
-			item4.update();
-
+		while (true) {
+			if(isPlay){
+				if (car1.isDestroy() == false && car2.isDestroy() == false) {
+					bg1.update();
+					bg2.update();
+					
+					item1.update();
+					item2.update();
+					item3.update();
+					item4.update();
+				} else {
+					isReset = true;
+					isPlay = false;
+					score.setShowScore(true);
+					soundGame.StopSound();
+				}
+				try {
+					Thread.sleep(FPS);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			} else {
+				
+			} 
 			repaint();
-			try {
-				Thread.sleep(17);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
 		}
 	}	
 
@@ -153,6 +296,7 @@ public class GamePlay extends JPanel implements Runnable, KeyListener, Constants
 		// TODO Auto-generated method stub
         if (e.getKeyCode() == KeyEvent.VK_A) {
             car1.moveLeft();
+            System.out.println("qua ne");
         }
         if (e.getKeyCode() == KeyEvent.VK_D) {
             car1.moveRight();
@@ -175,4 +319,6 @@ public class GamePlay extends JPanel implements Runnable, KeyListener, Constants
 	public void keyTyped(KeyEvent e) {
 		// TODO Auto-generated method stub}
 	}
+
+	
 }

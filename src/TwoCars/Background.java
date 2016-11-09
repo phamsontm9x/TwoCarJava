@@ -6,13 +6,13 @@ public class Background implements Constants {
 	public Background(int x,int y) {
 		bgX = x;
 		bgY = y;
-		speedY = FPS;
+		speedY = SPEED;
 	}
 	
 	public void update() {
 		bgY += speedY;
-		if (bgY >= 1000) {
-			bgY = -1000;
+		if (bgY >= WINDOW_HEIGHT) {
+			bgY = -WINDOW_HEIGHT;
 		}
 	}
 
