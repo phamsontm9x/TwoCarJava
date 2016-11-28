@@ -27,16 +27,17 @@ public class Car implements Constants,Runnable {
 	
 	private ImageIcon icBoom;
 	private Image Boom;
-	
+		
 	public Car (int x, int y ,boolean left ,boolean right, int typeCar) {
 		carX = x;
 		carY = y;
-		SpeedX = 2;
+		SpeedX = SPEED;
 		isLeft = left;
 		isRight = right;
 		isDestroy = false;
 		typeMove = 0;
 		frameCar.setBounds(x, y, CAR_WIDTH, CAR_HEIGHT);
+		
 		arrImageBoom = new ArrayList<Image>();
 		
 		if (typeCar == CAR_RED) {
@@ -64,20 +65,12 @@ public class Car implements Constants,Runnable {
 
 	public void moveLeft() {
 		if (isRight) {
-//			isRight = false ;
-//			isLeft = true;
-			//carX -= 120;
-			//frameCar.setBounds(carX, carY, CAR_WIDTH, CAR_HEIGHT);
 			typeMove = 1;
 		}
 	}
 	
 	public void moveRight() {
 		if (isLeft) {
-//			isLeft = false ;
-//			isRight = true;
-			//carX += 120;
-			//frameCar.setBounds(carX, carY, CAR_WIDTH, CAR_HEIGHT);
 			typeMove = 2;
 		}
 	}
@@ -145,7 +138,6 @@ public class Car implements Constants,Runnable {
 			if (isDestroy) {
 				for (int i = 0 ; i < 14; i ++) {
 					imageCar = arrImageBoom.get(i);
-					//frameCar.setBounds(carX, carY, CAR_WIDTH, CAR_HEIGHT);
 					try {
 						move.sleep(50);
 					} catch (InterruptedException e) {

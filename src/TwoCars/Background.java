@@ -1,12 +1,26 @@
 package TwoCars;
 
+import java.awt.Image;
+
+import javax.swing.ImageIcon;
+
 public class Background implements Constants {
 	private int bgX, bgY, speedY;
+	private Image imgBg;
 	
-	public Background(int x,int y) {
+	
+	public Background(int x, int y, int type) {
 		bgX = x;
 		bgY = y;
 		speedY = SPEED;
+		
+		if (type == BGImage ) {
+			ImageIcon icBG = new ImageIcon("res/Background.png");
+			setImgBg(icBG.getImage().getScaledInstance(500, 1000, Image.SCALE_SMOOTH));
+		} else {
+			ImageIcon icBGShadow = new ImageIcon("res/Backgroundshadow.png");
+			setImgBg(icBGShadow.getImage().getScaledInstance(500, 1000, Image.SCALE_SMOOTH));
+		}
 	}
 	
 	public void update() {
@@ -39,5 +53,12 @@ public class Background implements Constants {
 	public void setSpeedY(int speedY) {
 		this.speedY = speedY;
 	}
-	
+
+	public Image getImgBg() {
+		return imgBg;
+	}
+
+	public void setImgBg(Image imgBg) {
+		this.imgBg = imgBg;
+	}
 }

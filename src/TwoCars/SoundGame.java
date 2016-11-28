@@ -13,17 +13,20 @@ public class SoundGame {
 	
 	private Clip sound;
 	
-	public SoundGame() {
+	public SoundGame(String s) {
 		try {
-			AudioInputStream inputSound = AudioSystem.getAudioInputStream(new File("res/Sound.wav"));
+			AudioInputStream inputSound = AudioSystem.getAudioInputStream(new File(s));
 			sound = AudioSystem.getClip();
 			sound.open(inputSound);
-			sound.loop(Clip.LOOP_CONTINUOUSLY);
+			if (!s.equals("res/SoundBoom.wav"))  {
+				sound.loop(Clip.LOOP_CONTINUOUSLY);
+			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
+	
 	public void StopSound() {
 		if (sound.isRunning()){
 			sound.stop();

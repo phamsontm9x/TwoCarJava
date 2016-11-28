@@ -2,6 +2,7 @@ package TwoCars;
 
 import javax.swing.JFrame;
 
+@SuppressWarnings("serial")
 public class GameStart extends JFrame implements Constants {
 	public GameStart() {
 		add (new GamePlay());

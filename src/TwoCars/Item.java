@@ -31,7 +31,7 @@ public class Item implements Constants {
 		isSroce = false;
 		typeItem = type;
 		frameItem.setBounds(x, y, ITEM_HEIGHT, ITEM_WIDTH);
-		typeItem = randomCar();
+		typeItem = randomItem();
 		imageCar(typeItem);
 	}
 	
@@ -41,7 +41,6 @@ public class Item implements Constants {
 			if (typeItem == 0 || typeItem == 2) {
 				if (isSroce) {
 					sum ++;
-					System.out.println(sum);
 				} else {
 					if (typeItem == 0) {
 						GamePlay.car2.setDestroy(true);
@@ -53,7 +52,7 @@ public class Item implements Constants {
 			itemY = 0;
 			onScreen = true;
 			isSroce = false;
-			typeItem = randomCar();
+			typeItem = randomItem();
 			imageCar(typeItem);
 		} 
 		frameItem.setBounds(itemX, itemY, ITEM_HEIGHT, ITEM_WIDTH);
@@ -68,7 +67,7 @@ public class Item implements Constants {
 		this.sum = sum;
 	}
 
-	public int randomCar() {
+	public int randomItem() {
 		Random random = new Random(); 
 		int type = random.nextInt(2);
 		return (typeItem <2 )? (type):(type +2);
